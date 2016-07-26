@@ -1,0 +1,36 @@
+html,
+body {
+  height: 100%;
+  margin: 0px;
+  background: #0d0d0d;
+}
+
+#nav, .owl-nav{
+	display: none;
+	visibility: hidden;
+}
+
+#drop-zone{
+	height: 100%;
+	color: white;
+}
+
+.map-data-hidden, .map-box-hidden{
+	visibility: hidden;
+}
+
+.map-box{
+	height: 100vh;
+}
+.owl-carousel .owl-stage-outer .owl-stage  {
+	position: relative;
+	height: 100%;
+}
+.owl-item img, video{
+    margin: auto;
+	width: auto !important;
+    max-width: 100%;
+    max-height: 100vh;
+        vertical-align: middle;
+    display: block;
+}
