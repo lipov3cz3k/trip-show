@@ -68,6 +68,10 @@ function loadPresentation() {
 			slideMap = document.createElement('div');
 			$(slideMap).attr('id','slide'+slideIndex).addClass('owl-carousel owl-map').appendTo(item);
 			positions = document.createElement('div');
+			if(prezi.files[slideIndex].trek){
+				$(slideMap).attr('data-trek',prezi.files[slideIndex].trek);
+			}
+			
 			for(var posIndex in prezi.files[slideIndex].data) {
 				position = document.createElement('div');
 				$(position).addClass('position map-data-hidden')
@@ -137,6 +141,51 @@ function updateMap(newPosition)
 	activeMapPosition = newPosition;
 }
 
+function addTrek(slideId, trekUrl)
+{
+	if(!map.loaded()){
+		map.on('load', function() {
+			addTrek(slideId, trekUrl);
+		});
+		return;
+	}
+	trekId = "trek"+slideId;
+	if(map.getLayer(trekId))
+		return;
+	try{
+		map.addLayer({
+			"id": trekId,
+			"type": "line",
+			"source": {
+				"type": "geojson",
+				"data": trekUrl
+			},
+			"layout": {
+				"line-join": "round",
+				"line-cap": "round"
+			},
+			"paint": {
+				"line-color": "#888",
+				"line-width": 8
+			}
+		});
+	}catch(err){
+		console.log(err);
+	}
+}
+
+function removeTrek(slideId)
+{
+	trekId = "trek"+slideId;
+	if(!map.getLayer(trekId))
+		return;
+	try{
+		map.removeLayer(trekId);
+		map.removeSource(trekId);
+	}catch(err){
+		console.log(err);
+	}
+}
 ///////////////////
 
 
@@ -162,8 +211,8 @@ function attachEvents(){
 		if(videoElem.length)
 		{
 			videoReset(videoElem.get(0));
-			event.stopImmediatePropagation();
 		}
+		removeTrek(currentSlide);
 	});
 	
 	owlMain.on('changed.owl.carousel', function(event) {
@@ -178,11 +227,16 @@ function attachEvents(){
 			//Move map element to current slide
 			mapElem.detach().prependTo(elem.find('.owl-map'));
 			mapElem.removeClass('map-box-hidden');
-			
+
 			// Set current map position
 			var active = elem.find('.owl-item.active .position');
 			if(active.length == 0)
 				active = elem.find('.owl-item .position').eq(0);
+
+			if(elem.find(':first-child').data('trek')){
+				var trekUrl = settings.media_dir+'/'+prezi.mediaDir+'/'+elem.find(':first-child').data('trek');
+				addTrek(currentSlide, trekUrl);
+			}
 			updateMapFromElement(active);
 		}
 		if(elem.find('video').length)
