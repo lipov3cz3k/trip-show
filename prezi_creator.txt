@@ -1,0 +1,1 @@
+FILE="../${PWD##*/}_no_map.json" && echo "{\"mediaDir\":\"${PWD##*/}\", \"files\":[" >> $FILE && ls -1v | awk -F'[.]' '{if($NF=="jpg") type="img"; else if($NF=="mp4") type="video"; else type="unknow";  print "{\"type\":\""type"\", \"src\":\"" $0 "\"},";}' | head -c-2 >> $FILE  && echo "]}" >> $FILE
